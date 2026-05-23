@@ -259,7 +259,7 @@ a.pressed, button.pressed, .nav-cta.pressed, .btn-primary.pressed,
 
 
 /* ── ZOOM / LIGHTBOX ── */
-.zoomable { position:relative; cursor:zoom-in; overflow:hidden; }
+.zoomable { display:contents; } .zoomable img { position:relative; cursor:zoom-in; }
 .zoom-lens {
   position:absolute; pointer-events:none;
   width:110px; height:110px; border-radius:50%;
@@ -687,29 +687,32 @@ a.pressed, button.pressed, .nav-cta.pressed, .btn-primary.pressed,
     /* wrap in zoomable div */
     var wrap=document.createElement('div');
     wrap.className='zoomable';
-    wrap.style.display='inline-block';
-    wrap.style.width=img.offsetWidth+'px';
+    wrap.style.display='contents'; /* let parent CSS control layout */
     img.parentNode.insertBefore(wrap,img);
     wrap.appendChild(img);
 
     /* lens */
     var lens=document.createElement('div');
     lens.className='zoom-lens';
-    wrap.appendChild(lens);
+    /* Append lens to the step-img-col container for correct positioning */
+    var lensParent = img.closest('.step-img-col, .compare-card, .phone-frame') || img.parentNode;
+    lensParent.style.position = 'relative';
+    lensParent.style.overflow = 'hidden';
+    lensParent.appendChild(lens);
 
     var ZOOM=2.8;
 
     function moveLens(e){
-      var r=wrap.getBoundingClientRect();
+      var r=img.getBoundingClientRect();
       var cx=(e.clientX||e.touches[0].clientX)-r.left;
       var cy=(e.clientY||e.touches[0].clientY)-r.top;
       var lw=lens.offsetWidth, lh=lens.offsetHeight;
       var x=cx-lw/2, y=cy-lh/2;
-      x=Math.max(0,Math.min(x,wrap.offsetWidth-lw));
-      y=Math.max(0,Math.min(y,wrap.offsetHeight-lh));
+      x=Math.max(0,Math.min(x,img.offsetWidth-lw));
+      y=Math.max(0,Math.min(y,img.offsetHeight-lh));
       lens.style.left=x+'px';
       lens.style.top=y+'px';
-      var bw=img.offsetWidth*ZOOM, bh=img.offsetHeight*ZOOM;
+      var bw=(img.offsetWidth||160)*ZOOM, bh=(img.offsetHeight||300)*ZOOM;
       lens.style.backgroundImage='url("'+img.src+'")';
       lens.style.backgroundSize=bw+'px '+bh+'px';
       lens.style.backgroundPosition=
@@ -1066,29 +1069,32 @@ a.pressed, button.pressed, .nav-cta.pressed, .btn-primary.pressed,
     /* wrap in zoomable div */
     var wrap=document.createElement('div');
     wrap.className='zoomable';
-    wrap.style.display='inline-block';
-    wrap.style.width=img.offsetWidth+'px';
+    wrap.style.display='contents'; /* let parent CSS control layout */
     img.parentNode.insertBefore(wrap,img);
     wrap.appendChild(img);
 
     /* lens */
     var lens=document.createElement('div');
     lens.className='zoom-lens';
-    wrap.appendChild(lens);
+    /* Append lens to the step-img-col container for correct positioning */
+    var lensParent = img.closest('.step-img-col, .compare-card, .phone-frame') || img.parentNode;
+    lensParent.style.position = 'relative';
+    lensParent.style.overflow = 'hidden';
+    lensParent.appendChild(lens);
 
     var ZOOM=2.8;
 
     function moveLens(e){
-      var r=wrap.getBoundingClientRect();
+      var r=img.getBoundingClientRect();
       var cx=(e.clientX||e.touches[0].clientX)-r.left;
       var cy=(e.clientY||e.touches[0].clientY)-r.top;
       var lw=lens.offsetWidth, lh=lens.offsetHeight;
       var x=cx-lw/2, y=cy-lh/2;
-      x=Math.max(0,Math.min(x,wrap.offsetWidth-lw));
-      y=Math.max(0,Math.min(y,wrap.offsetHeight-lh));
+      x=Math.max(0,Math.min(x,img.offsetWidth-lw));
+      y=Math.max(0,Math.min(y,img.offsetHeight-lh));
       lens.style.left=x+'px';
       lens.style.top=y+'px';
-      var bw=img.offsetWidth*ZOOM, bh=img.offsetHeight*ZOOM;
+      var bw=(img.offsetWidth||160)*ZOOM, bh=(img.offsetHeight||300)*ZOOM;
       lens.style.backgroundImage='url("'+img.src+'")';
       lens.style.backgroundSize=bw+'px '+bh+'px';
       lens.style.backgroundPosition=
