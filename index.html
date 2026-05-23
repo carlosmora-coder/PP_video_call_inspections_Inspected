@@ -652,7 +652,7 @@ a.pressed, button.pressed, .nav-cta.pressed, .btn-primary.pressed,
 
   /* apply to all step + compare images */
   document.querySelectorAll(
-    '.step-img-col img, .compare-card img'
+    '.step-img-col img, .compare-card img, .phone-frame img'
   ).forEach(function(img){
     if(img.complete) addMagnifier(img);
     else img.addEventListener('load',function(){ addMagnifier(img); });
