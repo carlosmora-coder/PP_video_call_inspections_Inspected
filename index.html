@@ -638,15 +638,23 @@ a.pressed, button.pressed, .nav-cta.pressed, .btn-primary.pressed,
       lens.style.display='block';
     });
 
-    /* click/tap → lightbox */
+    /* click → lightbox (desktop) */
     img.style.cursor='zoom-in';
     img.addEventListener('click',function(e){
       e.stopPropagation();
       openLB(img.src);
     });
+    /* double-tap → lightbox (mobile only) */
+    var lastTap=0;
     img.addEventListener('touchend',function(e){
-      e.preventDefault();
-      openLB(img.src);
+      var now=Date.now();
+      var gap=now-lastTap;
+      lastTap=now;
+      if(gap<320 && gap>30){
+        e.preventDefault();
+        openLB(img.src);
+      }
+      /* single tap: do nothing — allow scroll */
     },{passive:false});
   }
 
