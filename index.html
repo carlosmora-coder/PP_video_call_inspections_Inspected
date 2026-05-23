@@ -257,6 +257,47 @@ a.pressed, button.pressed, .nav-cta.pressed, .btn-primary.pressed,
   transform: scale(1.04);
 }
 
+
+/* ── ZOOM / LIGHTBOX ── */
+.zoomable { position:relative; cursor:zoom-in; overflow:hidden; }
+.zoom-lens {
+  position:absolute; pointer-events:none;
+  width:110px; height:110px; border-radius:50%;
+  border:2.5px solid rgba(47,191,110,0.85);
+  box-shadow:0 2px 16px rgba(0,0,0,0.35);
+  background-repeat:no-repeat;
+  display:none; z-index:10;
+  transition:opacity .12s;
+}
+.zoomable:hover .zoom-lens { display:block; }
+
+/* lightbox overlay */
+.lb-overlay {
+  display:none; position:fixed; inset:0; z-index:1000;
+  background:rgba(4,5,44,0.92);
+  align-items:center; justify-content:center;
+  cursor:zoom-out;
+}
+.lb-overlay.active { display:flex; }
+.lb-overlay img {
+  max-width:92vw; max-height:88vh;
+  border-radius:12px;
+  box-shadow:0 8px 40px rgba(0,0,0,0.6);
+  animation:lbIn .18s ease;
+}
+.lb-close {
+  position:fixed; top:18px; right:22px;
+  color:#fff; font-size:32px; font-weight:300;
+  cursor:pointer; line-height:1; z-index:1001;
+  background:rgba(255,255,255,.12); border:none;
+  width:40px; height:40px; border-radius:50%;
+  display:flex; align-items:center; justify-content:center;
+}
+@keyframes lbIn {
+  from { opacity:0; transform:scale(.88); }
+  to   { opacity:1; transform:scale(1); }
+}
+
 </style>
 </head>
 <body>
@@ -526,6 +567,97 @@ a.pressed, button.pressed, .nav-cta.pressed, .btn-primary.pressed,
     }, {passive:true});
   }
   document.querySelectorAll('a, button').forEach(addPressEffect);
+})();
+</script>
+
+
+<div class="lb-overlay" id="lb" onclick="closeLB(event)">
+  <button class="lb-close" onclick="closeLB()" aria-label="Close">&#x2715;</button>
+  <img id="lb-img" src="" alt="Full size">
+</div>
+
+<script>
+(function(){
+
+  /* ── LIGHTBOX (mobile tap + desktop click) ── */
+  function openLB(src){
+    var o=document.getElementById('lb');
+    var i=document.getElementById('lb-img');
+    i.src=src; o.classList.add('active');
+    document.body.style.overflow='hidden';
+  }
+  window.closeLB=function(e){
+    if(e && e.target===document.getElementById('lb-img')) return;
+    document.getElementById('lb').classList.remove('active');
+    document.body.style.overflow='';
+  };
+  document.addEventListener('keydown',function(e){
+    if(e.key==='Escape') window.closeLB();
+  });
+
+  /* ── MAGNIFIER LENS (desktop hover only) ── */
+  function addMagnifier(img){
+    /* wrap in zoomable div */
+    var wrap=document.createElement('div');
+    wrap.className='zoomable';
+    wrap.style.display='inline-block';
+    wrap.style.width=img.offsetWidth+'px';
+    img.parentNode.insertBefore(wrap,img);
+    wrap.appendChild(img);
+
+    /* lens */
+    var lens=document.createElement('div');
+    lens.className='zoom-lens';
+    wrap.appendChild(lens);
+
+    var ZOOM=2.8;
+
+    function moveLens(e){
+      var r=wrap.getBoundingClientRect();
+      var cx=(e.clientX||e.touches[0].clientX)-r.left;
+      var cy=(e.clientY||e.touches[0].clientY)-r.top;
+      var lw=lens.offsetWidth, lh=lens.offsetHeight;
+      var x=cx-lw/2, y=cy-lh/2;
+      x=Math.max(0,Math.min(x,wrap.offsetWidth-lw));
+      y=Math.max(0,Math.min(y,wrap.offsetHeight-lh));
+      lens.style.left=x+'px';
+      lens.style.top=y+'px';
+      var bw=img.offsetWidth*ZOOM, bh=img.offsetHeight*ZOOM;
+      lens.style.backgroundImage='url("'+img.src+'")';
+      lens.style.backgroundSize=bw+'px '+bh+'px';
+      lens.style.backgroundPosition=
+        '-'+(cx*ZOOM-lw/2)+'px '+'-'+(cy*ZOOM-lh/2)+'px';
+    }
+
+    /* desktop hover */
+    wrap.addEventListener('mousemove',moveLens);
+    wrap.addEventListener('mouseleave',function(){
+      lens.style.display='none';
+    });
+    wrap.addEventListener('mouseenter',function(){
+      lens.style.display='block';
+    });
+
+    /* click/tap → lightbox */
+    img.style.cursor='zoom-in';
+    img.addEventListener('click',function(e){
+      e.stopPropagation();
+      openLB(img.src);
+    });
+    img.addEventListener('touchend',function(e){
+      e.preventDefault();
+      openLB(img.src);
+    },{passive:false});
+  }
+
+  /* apply to all step + compare images */
+  document.querySelectorAll(
+    '.step-img-col img, .compare-card img'
+  ).forEach(function(img){
+    if(img.complete) addMagnifier(img);
+    else img.addEventListener('load',function(){ addMagnifier(img); });
+  });
+
 })();
 </script>
 
