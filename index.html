@@ -234,6 +234,26 @@ svg.ico{width:15px;height:15px;display:block;flex-shrink:0}
   color:#2FBF6E;
   border-bottom-color:#2FBF6E;
 }
+
+/* ── Press / tap animation on all interactive elements ── */
+a, button, .nav-cta, .btn-primary, .btn-ghost, .contact-link,
+.mobile-nav-bar a, .nav-links a, .scard-btn {
+  transition: transform 0.12s ease, box-shadow 0.12s ease, background 0.15s ease;
+}
+a:active, button:active, .nav-cta:active, .btn-primary:active,
+.btn-ghost:active, .contact-link:active,
+.mobile-nav-bar a:active, .nav-links a:active, .scard-btn:active {
+  transform: scale(1.06);
+}
+/* Step images subtle zoom on hover/tap */
+.step-img-col img, .compare-card img {
+  transition: transform 0.18s ease;
+}
+.step-img-col img:hover, .compare-card img:hover,
+.step-img-col img:active, .compare-card img:active {
+  transform: scale(1.04);
+}
+
 </style>
 </head>
 <body>
