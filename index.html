@@ -745,13 +745,19 @@ a.pressed, button.pressed, .nav-cta.pressed, .btn-primary.pressed,
     },{passive:false});
   }
 
-  /* apply to all step + compare images */
-  document.querySelectorAll(
-    '.step-img-col img, .compare-card img, .phone-frame img'
-  ).forEach(function(img){
-    if(img.complete) addMagnifier(img);
-    else img.addEventListener('load',function(){ addMagnifier(img); });
-  });
+  /* apply to all step + compare images — exposed globally so language switch can reinit */
+  window.initZoom = function(root) {
+    var container = root || document;
+    container.querySelectorAll(
+      '.step-img-col img, .compare-card img, .phone-frame img'
+    ).forEach(function(img){
+      if(img.dataset.zoomInit) return; // already initialized
+      img.dataset.zoomInit = '1';
+      if(img.complete) addMagnifier(img);
+      else img.addEventListener('load',function(){ addMagnifier(img); });
+    });
+  };
+  window.initZoom(); // init visible images on load
 
 })();
 </script>
@@ -1118,13 +1124,19 @@ a.pressed, button.pressed, .nav-cta.pressed, .btn-primary.pressed,
     },{passive:false});
   }
 
-  /* apply to all step + compare images */
-  document.querySelectorAll(
-    '.step-img-col img, .compare-card img, .phone-frame img'
-  ).forEach(function(img){
-    if(img.complete) addMagnifier(img);
-    else img.addEventListener('load',function(){ addMagnifier(img); });
-  });
+  /* apply to all step + compare images — exposed globally so language switch can reinit */
+  window.initZoom = function(root) {
+    var container = root || document;
+    container.querySelectorAll(
+      '.step-img-col img, .compare-card img, .phone-frame img'
+    ).forEach(function(img){
+      if(img.dataset.zoomInit) return; // already initialized
+      img.dataset.zoomInit = '1';
+      if(img.complete) addMagnifier(img);
+      else img.addEventListener('load',function(){ addMagnifier(img); });
+    });
+  };
+  window.initZoom(); // init visible images on load
 
 })();
 </script>
@@ -1148,6 +1160,9 @@ function switchToLang(lang) {
   document.getElementById('app-en').style.display = (lang==='en') ? 'block' : 'none';
   document.getElementById('app-es').style.display = (lang==='es') ? 'block' : 'none';
   window.scrollTo(0,0);
+  // Init zoom for newly visible section
+  var activeId = (lang==='en') ? 'app-en' : 'app-es';
+  if(window.initZoom) window.initZoom(document.getElementById(activeId));
 }
 </script>
 
