@@ -242,7 +242,10 @@ a, button, .nav-cta, .btn-primary, .btn-ghost, .contact-link,
 }
 a:active, button:active, .nav-cta:active, .btn-primary:active,
 .btn-ghost:active, .contact-link:active,
-.mobile-nav-bar a:active, .nav-links a:active, .scard-btn:active {
+.mobile-nav-bar a:active, .nav-links a:active, .scard-btn:active,
+a.pressed, button.pressed, .nav-cta.pressed, .btn-primary.pressed,
+.btn-ghost.pressed, .contact-link.pressed,
+.mobile-nav-bar a.pressed, .nav-links a.pressed, .scard-btn.pressed {
   transform: scale(1.06);
 }
 /* Step images subtle zoom on hover/tap */
@@ -507,6 +510,24 @@ a:active, button:active, .nav-cta:active, .btn-primary:active,
   </div>
   <p>Video Call Inspections · <a href="https://inspected.cloud/" target="_blank" rel="noopener noreferrer" style="color:rgba(255,255,255,.5)">inspected.cloud</a> · Internal use only · 2026</p>
 </footer>
+
+
+<script>
+(function(){
+  function addPressEffect(el){
+    el.addEventListener('touchstart', function(){
+      el.classList.add('pressed');
+    }, {passive:true});
+    el.addEventListener('touchend', function(){
+      setTimeout(function(){ el.classList.remove('pressed'); }, 150);
+    }, {passive:true});
+    el.addEventListener('touchcancel', function(){
+      el.classList.remove('pressed');
+    }, {passive:true});
+  }
+  document.querySelectorAll('a, button').forEach(addPressEffect);
+})();
+</script>
 
 </body>
 </html>
